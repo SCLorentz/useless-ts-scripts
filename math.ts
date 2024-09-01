@@ -1,12 +1,12 @@
 const calc = {
-    '+': (op) => op.reduce((x, y) => x + y),
-    '-': (op) => op.reduce((x, y) => x - y),
-    '*': (op) => op.reduce(function m(x, y) {
+    '+': (op: Array<number>) => op.reduce((x, y) => x + y),
+    '-': (op: Array<number>) => op.reduce((x, y) => x - y),
+    '*': (op: Array<number>) => op.reduce(function m(x, y): number {
       if (y == 0 || y == 0) return 0;
       if (y < 0) return -m(x, -y);
       return x + m(x, y - 1);
     }),
-    '/': (op) => op.reduce(function d(x, y) {
+    '/': (op: Array<number>) => op.reduce(function d(x, y): number {
       if (x == 0 || x < y || y == 0) return 0;
       if (y < 0) return -d(x, -y);
       return 1 + d(x - y, y);
