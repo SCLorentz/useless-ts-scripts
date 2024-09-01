@@ -19,6 +19,6 @@ const div = calc['/']([60, 2, 3]);
 const negative = calc['*']([10,-1]);
 
 console.log(som)
-console.log(mul)
+console.log(mult)
 console.log(div)
 console.log(negative)
