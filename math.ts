@@ -16,12 +16,11 @@ const calc = {
     })
 };
 
-const som = calc['+']([1, 2, 3, 4]),
-    mult = calc['*']([5, 2]),
-    div = calc['/']([60, 2, 3]),
-    negative = calc['*']([10, -1]);
+const results = [
+    calc['+']([1,2,3,4]),    // soma
+    calc['*']([5,2]),        // multiplicação
+    calc['/']([60,2,3]),     // divisão
+    calc['*']([10, -1])      // negative result
+]
 
-console.log(som)
-console.log(mult)
-console.log(div)
-console.log(negative)
+results.forEach(e => console.log(e))
