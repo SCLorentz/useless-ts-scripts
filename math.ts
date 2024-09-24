@@ -5,16 +5,14 @@ const calc = {
     '+': (op: number[]) => op.reduce((x, y) => x + y),
     '-': (op: number[]) => op.reduce((x, y) => x - y),
     '*': (op: number[]) => op.reduce(function m(x, y): number {
-      if (y == 0) return 0;
       if (y < 0) return -m(x, -y);
       //
-      return x + m(x, calc['-']([y, 1]))
+      return (y == 0) ? 0 : x + m(x, calc['-']([y,1]))
     }),
     '/': (op: number[]) => op.reduce(function d(x, y): number {
-      if (x == 0 || x < y || y == 0) return 0;
       if (y < 0) return -d(x, -y);
       //
-      return 1 + d(calc['-']([x, y]), y)
+      return (x == 0 || x < y || y == 0) ? 0 : calc['+']([1,d(calc['-']([x,y]), y)])
     })
 };
 
