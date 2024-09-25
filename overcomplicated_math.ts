@@ -1,5 +1,5 @@
 // this is a script that can be used for math
-// If you can easily use the math operators in high level languages, like ts... Why not use an alternative method?
+// If you can easily use the math operators in high level languages, like ts... Why not use an alternative and overcomplicated method?
 
 class Calc {
   private op: number[];
@@ -37,21 +37,44 @@ class Calc {
   }
   //
   private sub(x: number, y: number): number {
-    if (x == y) return 0
-    if (x == 0) return y
-    if (y == 0) return x
+    // create rules
+    new Map()
+      .set(x == y, 0)   // every number plus their oposit will equals in 0
+      .set(x == 0, y)   // subtraction by 0 always result in no difference
+      .set(y == 0, -x)  // 0 minus anything result in their oposite number
+      .forEach((e, i) => e ? () => { return i } : null)
     //
     return this.calc['+']([x, this.calc['*']([y, -1])])
-    // equivalente à: x - y
+    // equivalente à: x - y (for now I can't use this.calc['-'] here without getting an error)
   }
   //
   private add(x: number, y: number): number {
+    // for some reason I can't use a map here
     if (x == y) return this.calc['*']([y, 2])
     if (x == 0) return y
     if (y == 0) return x
     //
+    /*if (y == 1) console.log(this.bin(x))
+    if (x == 1) console.log(this.bin(y))*/
+    //
     return x + y
   }
+  // this should get the number in binary and use an algoritym to return the consecutive one, all in my notebook
+  /*private bin(x: number): string {
+    const binary = x.toString(2);
+    //
+    console.log("value: " + this.next(binary))
+    //
+    return binary
+  }
+  //
+  private next(x: string): string {
+    const first_char = x.charAt(0)
+    // that means that the code must be broken
+    if (first_char == "1") return "0" // here I need to copy the unmodifyed part of the binary, maybe if we subistitute the the beggining of the original content with the new one, we don't need to get the value again...
+    // that means that the next char will be looked up
+    if (first_char == "0") return "1" + this.next(x.slice(1))
+  }*/
   //
   public calc = {
     // soma
@@ -67,6 +90,7 @@ class Calc {
 
 const results = [
   new Calc('+').result([1, 2, 3, 4]), // sum
+  new Calc('+').result([10, 10]),
   //
   new Calc('*').result([5, 2]),       // multiplication
   new Calc('*').result([10, -1]),     // negative result
@@ -74,7 +98,27 @@ const results = [
   new Calc('/').result([60, 2, 3]),   // division
   new Calc('/').result([40, 40]),     // division by itself is always 1
   //
-  new Calc('-').result([20, 10])
+  new Calc('-').result([20, 10]),
+  //
+  new Calc('+').result([10, 1])
 ]
 
 results.forEach(e => console.log(e))
+
+// yes! this is how it would look if I used the operators instead
+
+/*const results_2 = [
+  1 + 2 + 3 + 4,
+  10 + 10,
+  //
+  5 * 2,
+  10 * -1,
+  //
+  60 / 2 / 3,
+  40 / 40,
+  //
+  20 - 10,
+]
+
+console.log('normal way:')
+results_2.forEach(e => console.log(e))*/
