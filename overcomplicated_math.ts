@@ -38,11 +38,10 @@ class Calc {
   //
   private sub(x: number, y: number): number {
     // create rules
-    new Map()
-      .set(x == y, 0)   // every number plus their oposit will equals in 0
-      .set(x == 0, y)   // subtraction by 0 always result in no difference
-      .set(y == 0, -x)  // 0 minus anything result in their oposite number
-      .forEach((e, i) => e ? () => { return i } : null)
+    // 0 minus anything result in their oposite number
+    // subtraction by 0 always result in no difference
+    // every number plus their oposit will equals in 0
+    new Map<boolean, number>().set(x == y, 0).set(x == 0, y).set(y == 0, -x).forEach((e, i) => e ? () => { return i } : null)
     //
     return this.calc['+']([x, this.calc['*']([y, -1])])
     // equivalente à: x - y (for now I can't use this.calc['-'] here without getting an error)
