@@ -25,20 +25,39 @@ class Calc {
     if (y < 0) return this.calc['*']([this.div(x, -y), -1]);
     //
     return this.is_zero(x, y) || x < y ? 0 : this.calc['+']([this.div(x - y, y), 1])
+    // equivalente à: (x - y / y) + 1
   }
   private mult(x: number, y: number): number {
     //
     if (x == 1) return y
     if (y < 0) return -this.mult(x, -y);
     //
-    return (y == 0) ? 0 : x + this.mult(x, this.calc['-']([y, 1]))
+    return this.is_zero(y, x) ? 0 : x + this.mult(x, this.calc['-']([y, 1]))
+    // equivalente à: x + x * (y - 1)
+  }
+  //
+  private sub(x: number, y: number): number {
+    if (x == y) return 0
+    if (x == 0) return y
+    if (y == 0) return x
+    //
+    return this.calc['+']([x, this.calc['*']([y, -1])])
+    // equivalente à: x - y
+  }
+  //
+  private add(x: number, y: number): number {
+    if (x == y) return this.calc['*']([y, 2])
+    if (x == 0) return y
+    if (y == 0) return x
+    //
+    return x + y
   }
   //
   public calc = {
     // soma
-    '+': (op: number[]) => op.reduce((x, y) => x + y),
+    '+': (op: number[]) => op.reduce((x, y) => this.add(x, y)),
     // subtração
-    '-': (op: number[]) => op.reduce((x, y) => this.calc['+']([x, this.calc['*']([y, -1])])),
+    '-': (op: number[]) => op.reduce((x, y) => this.sub(x, y)),
     // multiplicação
     '*': (op: number[]) => op.reduce((x, y) => this.mult(x, y)),
     // divisão
