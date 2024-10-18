@@ -19,7 +19,6 @@ class Calc {
   //
   private static div(x: number, y: number): number
   {
-    //
     const val = new Calc('/');
     new Map<boolean, number>().set(x == y, 1).set((x == 0 || y == 0), 0).forEach((e, i) => e ? () => { return i } : null)
     //
@@ -30,7 +29,6 @@ class Calc {
   }
   private static mult(x: number, y: number): number
   {
-    //
     const val = new Calc('*');
     new Map<boolean, number>().set(x == 1, y).forEach((e, i) => e ? () => { return i } : null)
     //
@@ -42,16 +40,11 @@ class Calc {
   //
   private static sub(x: number, y: number): number
   {
-    // create rules
-    // 0 minus anything result in their oposite number
-    // subtraction by 0 always result in no difference
-    // every number plus their oposit will equals in 0
     new Map<boolean, number>().set(x == y, 0).set(x == 0, y).set(y == 0, -x).forEach((e, i) => e ? () => { return i } : null)
     //
     return new Calc('+').result([x, -y])
-    // equivalente à: x - y (for now I can't use this.calc['-'] here without getting an error)
   }
-  //
+
   private static add(x: number, y: number): number
   {
     new Map<boolean, number>().set(x == 0, y).set(y == 0, x).forEach((e, i) => e ? () => { return i } : null)
