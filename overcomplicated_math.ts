@@ -19,25 +19,13 @@ class Calc {
 
   private static div(x: number, y: number): number
   {
+    const val = new Calc('/');
     new Map<boolean, number>().set(x == y, 1).set((x == 0 || y == 0), 0)
       .forEach((e, i) => e ? () => { return i } : null)
 
-    // transform this in a hashmap
-    let x_value = x - y,
-        y_value = y,
-        sum = 0,
-        oposite = 1;
-
-    if (x < 0) {
-        x_value = x,
-        y_value = -y,
-        sum = 1,
-        oposite = -1
-    }
-
-    // Todo: add support for fractional values
-    return x < y ? 0 : (oposite * new Calc('/').result([x_value, y_value]) + sum)
-    // equivalente à: (x - y / y) + 1
+    if (y < 0) return -val.result([x, -y])
+    //
+    return x < y ? 0 : (val.result([x - y, y])) + 1
   }
 
   private static mult(x: number, y: number): number
@@ -93,12 +81,16 @@ class Calc {
   public calc = {
     // soma
     '+': (op: number[]) => op.reduce((x, y) => Calc.add(x, y)),
+    'addition': (op: number[]) => op.reduce((x, y) => Calc.add(x, y)),
     // subtração
     '-': (op: number[]) => op.reduce((x, y) => Calc.sub(x, y)),
+    'subtraction': (op: number[]) => op.reduce((x, y) => Calc.sub(x, y)),
     // multiplicação
     '*': (op: number[]) => op.reduce((x, y) => Calc.mult(x, y)),
+    'multiplication': (op: number[]) => op.reduce((x, y) => Calc.mult(x, y)),
     // divisão
-    '/': (op: number[]) => op.reduce((x, y) => Calc.div(x, y))
+    '/': (op: number[]) => op.reduce((x, y) => Calc.div(x, y)),
+    'division': (op: number[]) => op.reduce((x, y) => Calc.div(x, y))
   };
 }
 
