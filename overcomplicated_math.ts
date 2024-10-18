@@ -59,7 +59,7 @@ class Calc {
     /*if (y == 1) console.log(this.bin(x))
     if (x == 1) console.log(this.bin(y))*/
     //
-    return x == y ? x + y : new Calc('*').result([y, 2])
+    return x == y ? new Calc('*').result([y, 2]) : x + y
   }
   // this should get the number in binary and use an algoritym to return the consecutive one, all in my notebook
   /*private bin(x: number): string
@@ -98,7 +98,7 @@ const mult = new Calc('*'),
   sub = new Calc('-')
 
 const results = [
-  add.result([1, 2, 3, 4]), // sum <-- that should't be '8'...
+  add.result([1, 2, 3, 4]), // sum
   add.result([10, 10]),
   //
   mult.result([5, 2]),       // multiplication
