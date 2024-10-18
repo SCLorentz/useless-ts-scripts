@@ -4,51 +4,68 @@
 class Calc {
   private op: number[];
   private type: string;
-  //
+
   public constructor(type: string)
   {
     this.type = type;
   }
-  //
+
   public result(op: number[])
   {
     this.op = op;
     //
     return this.calc[this.type].bind(this)(this.op);
   }
-  //
+
   private static div(x: number, y: number): number
   {
-    const val = new Calc('/');
-    new Map<boolean, number>().set(x == y, 1).set((x == 0 || y == 0), 0).forEach((e, i) => e ? () => { return i } : null)
-    //
-    if (y < 0) return -(val.result([x, -y]))
-    //
-    return x < y ? 0 : (val.result([x - y, y])) + 1
+    new Map<boolean, number>().set(x == y, 1).set((x == 0 || y == 0), 0)
+      .forEach((e, i) => e ? () => { return i } : null)
+
+    // transform this in a hashmap
+    let x_value = x - y,
+        y_value = y,
+        sum = 0,
+        oposite = 1;
+
+    if (x < 0) {
+        x_value = x,
+        y_value = -y,
+        sum = 1,
+        oposite = -1
+    }
+
+    // Todo: add support for fractional values
+    return x < y ? 0 : (oposite * new Calc('/').result([x_value, y_value]) + sum)
     // equivalente à: (x - y / y) + 1
   }
+
   private static mult(x: number, y: number): number
   {
     const val = new Calc('*');
-    new Map<boolean, number>().set(x == 1, y).forEach((e, i) => e ? () => { return i } : null)
-    //
+
+    new Map<boolean, number>().set(x == 1, y)
+      .forEach((e, i) => e ? () => { return i } : null)
+
     if (y < 0) return -val.result([x, -y]);
     //
     return (x == 0 || y == 0) ? 0 : x + val.result([x, y - 1])
     // equivalente à: x + x * (y - 1)
   }
-  //
+
   private static sub(x: number, y: number): number
   {
-    new Map<boolean, number>().set(x == y, 0).set(x == 0, y).set(y == 0, -x).forEach((e, i) => e ? () => { return i } : null)
-    //
+    new Map<boolean, number>().set(x == y, 0).set(x == 0, y).set(y == 0, -x)
+      .forEach((e, i) => e ? () => { return i } : null)
+    
     return new Calc('+').result([x, -y])
   }
 
   private static add(x: number, y: number): number
   {
-    new Map<boolean, number>().set(x == 0, y).set(y == 0, x).forEach((e, i) => e ? () => { return i } : null)
-    //
+    new Map<boolean, number>().set(x == 0, y).set(y == 0, x)
+      .forEach((e, i) => e ? () => { return i } : null)
+
     /*if (y == 1) console.log(this.bin(x))
     if (x == 1) console.log(this.bin(y))*/
     //
@@ -63,7 +80,7 @@ class Calc {
     //
     return binary
   }
-  //
+  
   private next(x: string): string
   {
     const first_char = x.charAt(0)
@@ -72,7 +89,7 @@ class Calc {
     // that means that the next char will be looked up
     if (first_char == "0") return "1" + this.next(x.slice(1))
   }*/
-  //
+  
   public calc = {
     // soma
     '+': (op: number[]) => op.reduce((x, y) => Calc.add(x, y)),
@@ -102,7 +119,7 @@ const results = [
   //
   sub.result([20, 10]),
   //
-  add.result([10, 1])
+  add.result([9, 1])
 ]
 
 results.forEach(e => console.log(e))
