@@ -98,43 +98,38 @@ results.forEach(e => console.log(e))
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-function bin(x: number, bits: number, y = x.toString(2)): number
+interface String
 {
-  const binary: string = Array(bits - y.length + 1).join("0") + y;
-
-  const next = (x: string): string => {
-    return x.charAt(0) == "0" ? `1${x.substring(1)}` : `0${next(x.slice(1))}`
-  }
-
-  const result = reverse_string(next(reverse_string(binary)));
-
-  return parseInt(result, 2);
+  invert(): string;
+  next(): string;
 }
 
-function reverse_string(value: string)
+interface Number
 {
-  return value.split('').reverse().join('')
+  increase(bits: number): number;
+}
+
+String.prototype.invert = function(): string
+{
+  return this.split('').reverse().join('');
+}
+
+String.prototype.next = function(): string
+{
+  return this.charAt(0) == "0" ? `1${this.substring(1)}` : `0${this.slice(1).next()}`
+}
+
+Number.prototype.increase = function(bits: number, y = this.toString(2)): number
+{
+  return parseInt(
+    (`${Array(bits - y.length + 1).join("0")}${y}`).invert().next().invert(),
+    2
+  )
 }
 
 for (let i = 0; i < 100; i++)
 {
-  console.log(`${i} -> ${bin(i, 7)}`)
+  console.log(`${i} -> ${i.increase(7)}`)
 }
 
-// 07 --> 0111 - 1110
-// 08 --> 1000 - 0001
-// 09 --> 1001 - 1001
-// 10 --> 1010 - 0101
-// 11 --> 1011 - 1101
-
-// 1 -> return 0 and continue to the next one
-// 0 -> return 1, stop and merge with the remaining
-
-// (11) 1101 --> A >> 1, so return 0 and continue
-// 101 --> B >> 1, so return 0 and continue
-// 01 --> C >> 0, so return 1 and merge with the unmodfied part
-// (12) 0011
-
-// 1101 -> 0
-// 101 -> 0
-// 01 -> 1 stop
+// x.increase() does the same this that 'x++' or 'x += 1' or 'x = x + 1' does
