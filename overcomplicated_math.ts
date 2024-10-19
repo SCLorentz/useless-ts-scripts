@@ -30,12 +30,7 @@ Number.prototype.increase = function(bits: number, y = this.toString(2)): number
   )
 }
 
-for (let i = 0; i < 100; i++)
-{
-  console.log(`${i} -> ${i.increase(7)}`)
-}
-
-// x.increase() does the same this that 'x++' or 'x += 1' or 'x = x + 1' does
+// x.increase(32) does the same this that 'x++' or 'x += 1' or 'x = x + 1' does
 
 // (11) 1101 - 1011
 // (10) 0101 - 1010
@@ -56,7 +51,6 @@ class Calc {
   public result(op: number[]): number
   {
     this.op = op;
-    //
     return this.calc[this.operator].bind(this)(this.op);
   }
 
@@ -86,22 +80,40 @@ class Calc {
 
   private static sub(x: number, y: number): number
   {
-    new Map<boolean, number>().set(x == y, 0).set(x == 0, y).set(y == 0, -x)
-      .forEach((e, i) => e ? () => { return i } : null)
-    
-    return new Calc('+').result([x, -y])
+    return new Map<boolean, number>()
+      .set(true, new Calc('+').result([x, -y]))
+      .set(x == y, 0)
+      .set(x == 0, y)
+      .set(y == 0, -x)
+    // get the valid case
+    .get(true)
   }
 
   private static add(x: number, y: number): number
   {
-    new Map<boolean, number>().set(x == 0, y).set(y == 0, x)
-      .forEach((e, i) => e ? () => { return i } : null)
-
-    if (x == 1) return y.increase(32)
-    if (y == 1) return x.increase(32)
-    //
-    return x == y ? new Calc('*').result([y, 2]) : x + y
+    return new Map<boolean, number>()
+      .set(true, x + y)
+      .set(x == 1, y.increase(32))
+      .set(y == 1, x.increase(32))
+      .set(x == 0, y)
+      .set(y == 0, x)
+      .set(x == y, new Calc('*').result([y, 2]))
+    // get the valid case
+    .get(true)
   }
+
+  /*private static sum(x: number, y: number, d: number): number {
+    new Map<boolean, number>()
+      .set(x == 0, y)
+      .set(y == 0, x)
+      .set(x == 1, y.increase(32))
+      .set(y == 1, x.increase(32))
+      .set(x == y, new Calc('*').result([x, 2]))
+      .forEach((e, i) => e ? () => { return i } : null)
+    //
+    const new_value = x.increase(32);
+    return d == y ? x : Calc.sum(new_value, y, d.increase(32))
+  }*/
   
   public calc = {
     // soma
