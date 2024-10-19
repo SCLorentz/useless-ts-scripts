@@ -2,19 +2,19 @@
 // If you can easily use the math operators in high level languages, like ts... Why not use an alternative and overcomplicated method?
 
 class Calc {
-  private op: number[];
-  private type: string;
+  private op!: number[];
+  private operator: string;
 
-  public constructor(type: string)
+  public constructor(operator: string)
   {
-    this.type = type;
+    this.operator = operator;
   }
 
-  public result(op: number[])
+  public result(op: number[]): number
   {
     this.op = op;
     //
-    return this.calc[this.type].bind(this)(this.op);
+    return this.calc[this.operator].bind(this)(this.op);
   }
 
   private static div(x: number, y: number): number
@@ -59,38 +59,18 @@ class Calc {
     //
     return x == y ? new Calc('*').result([y, 2]) : x + y
   }
-  // this should get the number in binary and use an algoritym to return the consecutive one, all in my notebook
-  /*private bin(x: number): string
-  {
-    const binary = x.toString(2);
-    //
-    console.log("value: " + this.next(binary))
-    //
-    return binary
-  }
-  
-  private next(x: string): string
-  {
-    const first_char = x.charAt(0)
-    // that means that the code must be broken
-    if (first_char == "1") return "0" // here I need to copy the unmodifyed part of the binary, maybe if we subistitute the the beggining of the original content with the new one, we don't need to get the value again...
-    // that means that the next char will be looked up
-    if (first_char == "0") return "1" + this.next(x.slice(1))
-  }*/
+
+  /*binary conversion here*/
   
   public calc = {
     // soma
-    '+': (op: number[]) => op.reduce((x, y) => Calc.add(x, y)),
-    'addition': (op: number[]) => op.reduce((x, y) => Calc.add(x, y)),
+    '+': (op: number[]): number => op.reduce((x, y) => Calc.add(x, y)),
     // subtração
-    '-': (op: number[]) => op.reduce((x, y) => Calc.sub(x, y)),
-    'subtraction': (op: number[]) => op.reduce((x, y) => Calc.sub(x, y)),
+    '-': (op: number[]): number => op.reduce((x, y) => Calc.sub(x, y)),
     // multiplicação
-    '*': (op: number[]) => op.reduce((x, y) => Calc.mult(x, y)),
-    'multiplication': (op: number[]) => op.reduce((x, y) => Calc.mult(x, y)),
+    '*': (op: number[]): number => op.reduce((x, y) => Calc.mult(x, y)),
     // divisão
-    '/': (op: number[]) => op.reduce((x, y) => Calc.div(x, y)),
-    'division': (op: number[]) => op.reduce((x, y) => Calc.div(x, y))
+    '/': (op: number[]): number => op.reduce((x, y) => Calc.div(x, y))
   };
 }
 
@@ -115,3 +95,52 @@ const results = [
 ]
 
 results.forEach(e => console.log(e))
+
+///////////////////////////////////////////////////////////////////////////////////
+
+function bin(x: number, bits: number): number
+{
+  const inversed_binary = (y = x.toString(2)) => {
+    while (y.length < bits) y = `0${y}`; // use a recursive call here
+    return y
+  }
+
+  const next = (x: string): string => {
+    return x.charAt(0) == "0" ? `1${x.substring(1)}` : `0${next(x.slice(1))}`
+  }
+
+  const result = reverse_string(next(reverse_string(inversed_binary())));
+
+  return parseInt(result, 2);
+}
+
+function reverse_string(value: string) {
+  const split = value.split('');
+  let inverse: string = "";
+
+  split.length > 1 ? split.reverse().forEach(e => inverse += e) : inverse = value
+  //
+  return inverse
+}
+
+for (let i = 0; i < 100; i++) {
+  console.log(`${i} -> ${bin(i, 7)}`)
+}
+
+// 07 --> 0111 - 1110
+// 08 --> 1000 - 0001
+// 09 --> 1001 - 1001
+// 10 --> 1010 - 0101
+// 11 --> 1011 - 1101
+
+// 1 -> return 0 and continue to the next one
+// 0 -> return 1, stop and merge with the remaining
+
+// (11) 1101 --> A >> 1, so return 0 and continue
+// 101 --> B >> 1, so return 0 and continue
+// 01 --> C >> 0, so return 1 and merge with the unmodfied part
+// (12) 0011
+
+// 1101 -> 0
+// 101 -> 0
+// 01 -> 1 stop
