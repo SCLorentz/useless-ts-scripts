@@ -1,6 +1,10 @@
 // this is a script that can be used for math
 // If you can easily use the math operators in high level languages, like ts... Why not use an alternative and overcomplicated method?
 
+// Todo: detect if the number is decimal and multply it by the number of chars in the string - 1
+
+// Todo: Idk how you're gonna do it, but you need to add support for negative numbers as well
+
 interface String
 {
   invert(): string;
@@ -24,10 +28,8 @@ String.prototype.next = function(): string
 
 Number.prototype.increase = function(bits: number, y = this.toString(2)): number
 {
-  return parseInt(
-    (`${Array(bits - y.length + 1).join("0")}${y}`).invert().next().invert(),
-    2
-  )
+  const binary = `${Array(bits - y.length + 1).join("0")}${y}`
+  return parseInt(binary.invert().next().invert(), 2)
 }
 
 // x.increase(32) does the same this that 'x++' or 'x += 1' or 'x = x + 1' does
@@ -92,7 +94,7 @@ class Calc {
   private static add(x: number, y: number): number
   {
     return new Map<boolean, number>()
-      .set(true, x + y)
+      .set(true, /*Calc.sum(x, y)*/x + y)
       .set(x == 1, y.increase(32))
       .set(y == 1, x.increase(32))
       .set(x == 0, y)
@@ -102,17 +104,14 @@ class Calc {
     .get(true)
   }
 
-  /*private static sum(x: number, y: number, d: number): number {
-    new Map<boolean, number>()
-      .set(x == 0, y)
-      .set(y == 0, x)
-      .set(x == 1, y.increase(32))
-      .set(y == 1, x.increase(32))
-      .set(x == y, new Calc('*').result([x, 2]))
-      .forEach((e, i) => e ? () => { return i } : null)
-    //
-    const new_value = x.increase(32);
-    return d == y ? x : Calc.sum(new_value, y, d.increase(32))
+  // Not totaly working, for some reason 1 + 2 + 3 = 6, but 1 + 2 + 3 + 4 is 11
+  /*private static sum(x: number, y: number): number {
+    let new_value = x.increase(32);
+    //return d == y ? x : Calc.sum(new_value, y, d.increase(32))
+    for (let i = 0; i < y; i++) {
+      new_value = new_value.increase(32)
+    }
+    return new_value
   }*/
   
   public calc = {
@@ -143,8 +142,19 @@ const results = [
   div.result([40, 40]),      // division by itself is always 1
   //
   sub.result([20, 10]),
+  sub.result([10, -10]),     // 10 - (-10) = 10 + 10
   //
   add.result([9, 1])
 ]
 
 results.forEach(e => console.log(e))
+
+
+/*function ok() {
+  const v = new Map<boolean, string>().set(1 == 3 - 2, "hello").set(2 == 2 - 1, "world").set(false, "i")
+  .get(true)
+
+  console.log("v: ", v)
+}
+
+ok()*/
