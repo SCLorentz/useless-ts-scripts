@@ -5,80 +5,95 @@
 
 // Todo: Idk how you're gonna do it, but you need to add support for negative numbers as well
 
+type Str = string
+type Num = number
+
 interface String
 {
-  invert(): string;
-  next(): string;
-  prev(): string;
-  over_two(): string;
-  cut_half(): string;
+  invert(): Str;
+  next(): Str;
+  prev(): Str;
+  over_two(): Str;
 }
 
 interface Number
 {
-  increase(bits: number): number;
-  decrease(bits: number): number;
-  twice(bits: number): number;
-  half(bits: number): number;
-  fill_bits(bits: number): string;
+  increase(bits: Num): Num;
+  decrease(bits: Num): Num;
+  twice(bits: Num): Num;
+  half(bits: Num): Num;
+  fill_bits(bits: Num): Str;
 }
 
-String.prototype.invert = function(): string
+String.prototype.invert = 
+
+function(): Str
 {
   return this.split('').reverse().join('');
 }
 
-Number.prototype.fill_bits = function(bits: number, a = this.toString(2)): string
+Number.prototype.fill_bits = 
+
+function(bits: Num, a: Str = this.toString(2)): Str
 {
-  return `${Array(bits - a.length + 1).join("0")}${a}`
+  return `${Array(bits - a.length + 1).join("0")}${a}`.invert()
 }
 
 // Sum +1
-String.prototype.next = function(): string
+String.prototype.next = 
+
+function(): Str
 {
   return this.charAt(0) == "0" ? `1${this.substring(1)}` : `0${this.slice(1).next()}`
 }
 
-Number.prototype.increase = function(bits: number, bin = this.fill_bits(bits)): number
+Number.prototype.increase = 
+
+function(bits: Num, bin = this.fill_bits(bits)): Num
 {
-  return parseInt(bin.invert().next().invert(), 2)
+  return parseInt(bin.next().invert(), 2)
 }
 
 // Sub -1
-String.prototype.prev = function(): string
+String.prototype.prev = 
+
+function(): Str
 {
   return this.charAt(0) == "0" ? `1${this.slice(1).prev()}` : `0${this.substring(1)}`
 }
 
-Number.prototype.decrease = function(bits: number, bin = this.fill_bits(bits)): number
+Number.prototype.decrease = 
+
+function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 {
-  return parseInt(bin.invert().prev().invert(), 2)
+  return parseInt(bin.prev().invert(), 2)
 }
 
 // Mult *2
-String.prototype.over_two = function(): string
+String.prototype.over_two = 
+
+function(): string
 {
-  return `0${this.substring(0, this.length - 1)}`
+  return `0${this.substring(0, this.length - 1)}`.invert()
 }
 
-Number.prototype.twice = function(bits: number, bin = this.fill_bits(bits)): number
+Number.prototype.twice = 
+
+function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 {
-  return parseInt(bin.invert().over_two().invert(), 2)
+  return parseInt(bin.over_two(), 2)
 }
 
 // div / 2
-String.prototype.cut_half = function(): string
-{
-  return `${this.substring(1)}0`
-}
 
-Number.prototype.half = function(bits: number, bin = this.fill_bits(bits)): number
-{
-  return parseInt(bin.invert().cut_half().invert(), 2)
-}
+Number.prototype.half = 
 
-//console.log((3).twice(4))
-//console.log((9).half(5))
+function(bits: Num, bin: Str = this.fill_bits(bits)): Num
+{
+  const val = `${bin.substring(1)}0`.invert();
+  //
+  return parseInt(val, 2)
+}
 
 // x.increase(32) does the same thing that 'x++', 'x += 1' or 'x = x + 1' does
 // x.decrease(32) does the same thing that 'x--', 'x -= 1' or 'x = x - 1' does
