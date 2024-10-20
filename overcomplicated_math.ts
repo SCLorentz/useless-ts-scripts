@@ -41,10 +41,14 @@ Number.prototype.increase = function(bits: number, y = this.toString(2)): number
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-class Calc {
-  private op!: number[];
-  private operator: string;
+interface Calc
+{
+  op: number[],
+  operator: string
+}
 
+class Calc implements Calc
+{
   public constructor(operator: string)
   {
     this.operator = operator;
@@ -82,25 +86,25 @@ class Calc {
 
   private static sub(x: number, y: number): number
   {
-    return new Map<boolean, number>()
-      .set(true, new Calc('+').result([x, -y]))
-      .set(x == y, 0)
-      .set(x == 0, y)
-      .set(y == 0, -x)
-    // get the valid case
+    return new Map<boolean, number>([
+      [true, new Calc('+').result([x, -y])],
+      [x == y, 0],
+      [x == 0, y],
+      [y == 0, x]
+    ])
     .get(true)
   }
 
   private static add(x: number, y: number): number
   {
-    return new Map<boolean, number>()
-      .set(true, /*Calc.sum(x, y)*/x + y)
-      .set(x == 1, y.increase(32))
-      .set(y == 1, x.increase(32))
-      .set(x == 0, y)
-      .set(y == 0, x)
-      .set(x == y, new Calc('*').result([y, 2]))
-    // get the valid case
+    return new Map<boolean, number>([
+      [true, /*Calc.sum(x, y)*/x + y],
+      [x == 1, y.increase(32)],
+      [y == 1, x.increase(32)],
+      [x == 0, y],
+      [y == 0, x],
+      [x == y, new Calc('*').result([y, 2])]
+    ])
     .get(true)
   }
 
@@ -148,13 +152,3 @@ const results = [
 ]
 
 results.forEach(e => console.log(e))
-
-
-/*function ok() {
-  const v = new Map<boolean, string>().set(1 == 3 - 2, "hello").set(2 == 2 - 1, "world").set(false, "i")
-  .get(true)
-
-  console.log("v: ", v)
-}
-
-ok()*/
