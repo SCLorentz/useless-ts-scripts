@@ -9,11 +9,18 @@ interface String
 {
   invert(): string;
   next(): string;
+  prev(): string;
+  over_two(): string;
+  cut_half(): string;
 }
 
 interface Number
 {
   increase(bits: number): number;
+  decrease(bits: number): number;
+  twice(bits: number): number;
+  half(bits: number): number;
+  fill_bits(bits: number): string;
 }
 
 String.prototype.invert = function(): string
@@ -21,23 +28,81 @@ String.prototype.invert = function(): string
   return this.split('').reverse().join('');
 }
 
+Number.prototype.fill_bits = function(bits: number, a = this.toString(2)): string
+{
+  return `${Array(bits - a.length + 1).join("0")}${a}`
+}
+
+// Sum +1
 String.prototype.next = function(): string
 {
   return this.charAt(0) == "0" ? `1${this.substring(1)}` : `0${this.slice(1).next()}`
 }
 
-Number.prototype.increase = function(bits: number, y = this.toString(2)): number
+Number.prototype.increase = function(bits: number, bin = this.fill_bits(bits)): number
 {
-  const binary = `${Array(bits - y.length + 1).join("0")}${y}`
-  return parseInt(binary.invert().next().invert(), 2)
+  return parseInt(bin.invert().next().invert(), 2)
 }
 
-// x.increase(32) does the same this that 'x++' or 'x += 1' or 'x = x + 1' does
+// Sub -1
+String.prototype.prev = function(): string
+{
+  return this.charAt(0) == "0" ? `1${this.slice(1).prev()}` : `0${this.substring(1)}`
+}
+
+Number.prototype.decrease = function(bits: number, bin = this.fill_bits(bits)): number
+{
+  return parseInt(bin.invert().prev().invert(), 2)
+}
+
+// Mult *2
+String.prototype.over_two = function(): string
+{
+  return `0${this.substring(0, this.length - 1)}`
+}
+
+Number.prototype.twice = function(bits: number, bin = this.fill_bits(bits)): number
+{
+  return parseInt(bin.invert().over_two().invert(), 2)
+}
+
+// div / 2
+String.prototype.cut_half = function(): string
+{
+  return `${this.substring(1)}0`
+}
+
+Number.prototype.half = function(bits: number, bin = this.fill_bits(bits)): number
+{
+  return parseInt(bin.invert().cut_half().invert(), 2)
+}
+
+//console.log((3).twice(4))
+//console.log((9).half(5))
+
+// x.increase(32) does the same thing that 'x++', 'x += 1' or 'x = x + 1' does
+// x.decrease(32) does the same thing that 'x--', 'x -= 1' or 'x = x - 1' does
+// x.twice(32) does the same thing that 'x *= 2' or 'x = x * 2' does
+// x.half(32) does the same thing that 'x /= 2' or 'x = x / 2' does
 
 // (11) 1101 - 1011
 // (10) 0101 - 1010
 // (09) 1001 - 1001
 // (08) 0010 - 0100
+
+// (01) 0001 - 1000
+// (02) 0010 - 0100
+// (04) 0100 - 0010
+// (08) 1000 - 0001
+
+// (05) 0101 - 1010
+// (10) 1010 - 0101
+
+// (03) 0011 - 1100
+// (06) 0110 - 0110
+// (09) 1001 - 1001
+// (12) 1100 - 0011
+// (15) 1111 - 1111
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +128,11 @@ class Calc implements Calc
   private static div(x: number, y: number): number
   {
     const val = new Calc('/');
-    new Map<boolean, number>().set(x == y, 1).set((x == 0 || y == 0), 0)
+    new Map<boolean, number>()
+      .set(x == y, 1)
+      .set((x == 0 || y == 0), 0)
+      .set(x == 2, y.half(32))
+      .set(y == 2, x.half(32))
       .forEach((e, i) => e ? () => { return i } : null)
 
     if (y < 0) return -val.result([x, -y])
@@ -75,7 +144,10 @@ class Calc implements Calc
   {
     const val = new Calc('*');
 
-    new Map<boolean, number>().set(x == 1, y)
+    new Map<boolean, number>()
+      .set(x == 1, y)
+      .set(x == 2, y.twice(32))
+      .set(y == 2, x.twice(32))
       .forEach((e, i) => e ? () => { return i } : null)
 
     if (y < 0) return -val.result([x, -y]);
@@ -87,7 +159,9 @@ class Calc implements Calc
   private static sub(x: number, y: number): number
   {
     return new Map<boolean, number>([
-      [true, new Calc('+').result([x, -y])],
+      [true, x - y],
+      [x == 1, y.decrease(32)],
+      [y == 1, x.decrease(32)],
       [x == y, 0],
       [x == 0, y],
       [y == 0, x]
@@ -101,9 +175,9 @@ class Calc implements Calc
       [true, /*Calc.sum(x, y)*/x + y],
       [x == 1, y.increase(32)],
       [y == 1, x.increase(32)],
+      [x == y, x.twice(32)],
       [x == 0, y],
-      [y == 0, x],
-      [x == y, new Calc('*').result([y, 2])]
+      [y == 0, x]
     ])
     .get(true)
   }
@@ -137,7 +211,7 @@ const mult = new Calc('*'),
 
 const results = [
   add.result([1, 2, 3, 4]),  // sum
-  add.result([10, 10]),
+  add.result([10, 10]),      // 10 * 2
   //
   mult.result([5, 2]),       // multiplication
   mult.result([10, -1]),     // negative result
@@ -146,7 +220,7 @@ const results = [
   div.result([40, 40]),      // division by itself is always 1
   //
   sub.result([20, 10]),
-  sub.result([10, -10]),     // 10 - (-10) = 10 + 10
+  sub.result([5, -5]),       // 10 - (-10) = 10 + 10
   //
   add.result([9, 1])
 ]
