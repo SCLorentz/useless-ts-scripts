@@ -35,3 +35,6 @@ const size: number = Deno.args[0]?.to_number() || 6;
 
 console.clear();
 console.log(`generated: ${createName(size)}`)
+
+
+// 946 chars
