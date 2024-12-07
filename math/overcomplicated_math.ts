@@ -5,24 +5,27 @@
 
 // Todo: Idk how you're gonna do it, but you need to add support for negative numbers as well
 
-type Str = string
-type Num = number
+type Str = string;
+type Num = number;
 
-interface String
+declare global
 {
-  invert(): Str;
-  next(): Str;
-  prev(): Str;
-  over_two(): Str;
-}
-
-interface Number
-{
-  increase(bits: Num): Num;
-  decrease(bits: Num): Num;
-  twice(bits: Num): Num;
-  half(bits: Num): Num;
-  fill_bits(bits: Num): Str;
+  interface String
+  {
+    invert(): Str;
+    next(): Str;
+    prev(): Str;
+    over_two(): Str;
+  }
+  
+  interface Number
+  {
+    increase(bits: Num): Num;
+    decrease(bits: Num): Num;
+    twice(bits: Num): Num;
+    half(bits: Num): Num;
+    fill_bits(bits: Num): Str;
+  }  
 }
 
 String.prototype.invert = 
@@ -33,7 +36,7 @@ function(): Str
 }
 
 Number.prototype.fill_bits = 
-
+// @ts-ignore: this can't be Any, cause it's a number
 function(bits: Num, a: Str = this.toString(2)): Str
 {
   return `${Array(bits - a.length + 1).join("0")}${a}`.invert()
@@ -48,7 +51,7 @@ function(): Str
 }
 
 Number.prototype.increase = 
-
+// @ts-ignore: this can't be Any, cause it's a number
 function(bits: Num, bin = this.fill_bits(bits)): Num
 {
   return parseInt(bin.next().invert(), 2)
@@ -63,7 +66,7 @@ function(): Str
 }
 
 Number.prototype.decrease = 
-
+// @ts-ignore: this can't be Any, cause it's a number
 function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 {
   return parseInt(bin.prev().invert(), 2)
@@ -78,7 +81,7 @@ function(): string
 }
 
 Number.prototype.twice = 
-
+// @ts-ignore: this can't be Any, cause it's a number
 function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 {
   return parseInt(bin.over_two(), 2)
@@ -87,7 +90,7 @@ function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 // div / 2
 
 Number.prototype.half = 
-
+// @ts-ignore: this can't be Any, cause it's a number
 function(bits: Num, bin: Str = this.fill_bits(bits)): Num
 {
   const val = `${bin.substring(1)}0`.invert();
@@ -134,7 +137,7 @@ class Calc implements Calc
     this.operator = operator;
   }
 
-  public result(op: number[]): number
+  public result(...op: number[]): number
   {
     this.op = op;
     return this.calc[this.operator].bind(this)(this.op);
@@ -150,9 +153,9 @@ class Calc implements Calc
       .set(y == 2, x.half(32))
       .forEach((e, i) => e ? () => { return i } : null)
 
-    if (y < 0) return -val.result([x, -y])
+    if (y < 0) return -val.result(x, -y)
     //
-    return x < y ? 0 : (val.result([x - y, y])).increase(32)
+    return x < y ? 0 : (val.result(x - y, y)).increase(32)
   }
 
   private static mult(x: number, y: number): number
@@ -165,9 +168,9 @@ class Calc implements Calc
       .set(y == 2, x.twice(32))
       .forEach((e, i) => e ? () => { return i } : null)
 
-    if (y < 0) return -val.result([x, -y]);
+    if (y < 0) return -val.result(x, -y);
     //
-    return (x == 0 || y == 0) ? 0 : x + val.result([x, y - 1])
+    return (x == 0 || y == 0) ? 0 : x + val.result(x, y - 1)
     // equivalente à: x + x * (y - 1)
   }
 
@@ -181,7 +184,7 @@ class Calc implements Calc
       [x == 0, y],
       [y == 0, x]
     ])
-    .get(true)
+    .get(true)!
   }
 
   private static add(x: number, y: number): number
@@ -194,7 +197,7 @@ class Calc implements Calc
       [x == 0, y],
       [y == 0, x]
     ])
-    .get(true)
+    .get(true)!
   }
 
   // Not totaly working, for some reason 1 + 2 + 3 = 6, but 1 + 2 + 3 + 4 is 11
@@ -207,7 +210,7 @@ class Calc implements Calc
     return new_value
   }*/
   
-  public calc = {
+  public calc: { [key: string]: (op: number[]) => number } = {
     // soma
     '+': (op: number[]): number => op.reduce((x, y) => Calc.add(x, y)),
     // subtração
@@ -225,19 +228,19 @@ const mult = new Calc('*'),
   sub = new Calc('-')
 
 const results = [
-  add.result([1, 2, 3, 4]),  // sum
-  add.result([10, 10]),      // 10 * 2
+  add.result(1, 2, 3, 4),  // sum
+  add.result(10, 10),      // 10 * 2
   //
-  mult.result([5, 2]),       // multiplication
-  mult.result([10, -1]),     // negative result
+  mult.result(5, 2),       // multiplication
+  mult.result(10, -1),     // negative result
   //
-  div.result([60, 2, 3]),    // division
-  div.result([40, 40]),      // division by itself is always 1
+  div.result(60, 2, 3),    // division
+  div.result(40, 40),      // division by itself is always 1
   //
-  sub.result([20, 10]),
-  sub.result([5, -5]),       // 10 - (-10) = 10 + 10
+  sub.result(20, 10),
+  sub.result(5, -5),       // 10 - (-10) = 10 + 10
   //
-  add.result([9, 1])
+  add.result(9, 1)
 ]
 
 results.forEach(e => console.log(e))

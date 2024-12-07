@@ -1,6 +1,8 @@
+type Mult<T> = T | T[];
+
 function greet(person: string): string;
 function greet(persons: string[]): string[];
-function greet(person: string | string[]): string | string[]
+function greet(person: Mult<string>): Mult<string>
 {
     return Array.isArray(person) ? person.map(name => `Hello, ${name}!`) : `Hello, ${person}!`;
 }
