@@ -1,4 +1,5 @@
-declare global
+// deno-lint-ignore-file no-constant-condition
+/*declare global
 {
     interface Boolean
     {
@@ -21,20 +22,31 @@ T: { while(true.invert().toString() == "false")
 {
     console.log("hello world!")
     break T
-}}
+}}*/
 
-let _x = "bruh" as const;
+console.log`${1 + 1}wtf`
 
-F: {while (false)
+// l -> (![] + [])[!+[] + !+[]]
+// i --> ([![]]+[][[]])[+!+[]+[+[]]]
+// n --> ([![]]+[][[]])[+!-[]+[!-![] -![]]]
+// e --> ([![]]+[][[]])[+!+[]+[!-![] + !+[]]]
+
+void async function main<T extends string>(): Promise<void & undefined>
 {
-    if (_x == "bruh")
+    let _x: T = "bruh" as const;
+    F: {while (false)
     {
-        console.log("hello world!")
-        _x = "other"
-        break F
-    }
-    else 
-    {
-        _x = "bruh"
-    }
-}}
+        if (_x === "bruh")
+        {
+            console.log("hello world!")
+            _x = "other"
+            break F
+        }
+        else if (_x !== "bruh")
+        {
+            const get_true_value = (): Promise<string> => new Promise((resolve, reject) => !false ? resolve("bruh") : reject("not bruh"))
+            _x = await get_true_value().catch((e) => console.log(e));
+            continue
+        }
+    }}
+}
